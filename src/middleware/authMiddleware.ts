@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-const SECRET_KEY = process.env.JWT_SECRET || "";
-
 export interface CustomRequest extends Request {
   user?: string | jwt.JwtPayload;
 }
@@ -12,9 +10,10 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
+  const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || "";
 
-  const publicPaths = ["/api/login", "/api/register"];
-  
+  const publicPaths = ["/api/login", "/api/register", "/api/forgot-password"];
+
   if (publicPaths.includes(req.path)) {
     return next();
   }
@@ -29,10 +28,12 @@ export const authMiddleware = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
+    console.log(err);
+
     res.status(401).json({ error: "Expired or invalid token" });
   }
 };
