@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { loginSchema } from "../validators/authValidator";
+import { loginSchema, registerSchema } from "../validators/authValidator";
 
 export const login = (req: Request, res: Response): void => {
   const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || '';
@@ -19,8 +19,6 @@ export const login = (req: Request, res: Response): void => {
     return;
   }
 
-  console.log(ACCESS_TOKEN_SECRET);
-
   const userPayload = { username, password };
 
   const accessToken = jwt.sign(userPayload, ACCESS_TOKEN_SECRET, {
@@ -35,3 +33,21 @@ export const login = (req: Request, res: Response): void => {
     refreshToken
   });
 };
+
+export const register = (req: Request, res: Response): void => {
+
+  const parsed = registerSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.format() });
+    return;
+  }
+
+  const { username } = parsed.data;
+  if (username == "teste@mapbox.com") {
+    res.status(409).json({ error: "Conflict." });
+    return;
+  }
+
+  res.status(201).json({ success: "account created." });
+  return;
+}
