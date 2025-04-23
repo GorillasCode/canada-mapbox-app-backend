@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { locationSchema } from "../validators/locationsValidator";
 
 interface LocationRequestBody {
   address: string;
@@ -6,22 +7,20 @@ interface LocationRequestBody {
   longitude: number;
 }
 
-const savedLocations: LocationRequestBody[] = []; //temporário até BD
+const savedLocations: LocationRequestBody[] = [];
 
 export const searchLocation = (req: Request, res: Response) => {
-  const { address, latitude, longitude } = req.body;
+  const parsed = locationSchema.safeParse(req.body);
 
-  if (!address || typeof address !== 'string' || address.trim() === '') {
-    return res.status(400).json({ error: "Endereço inválido." });
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.format() });
   }
-  if (typeof latitude !== 'number' || typeof longitude !== 'number') {
-    return res.status(400).json({ error: "Latitude e longitude devem ser números." });
-  }
+
+  const { address, latitude, longitude } = parsed.data;
 
   const newLocation = { address, latitude, longitude };
 
-  savedLocations.push(newLocation); //temporário até BD
-
+  savedLocations.push(newLocation);
 
   return res.status(201).json(newLocation);
 };
