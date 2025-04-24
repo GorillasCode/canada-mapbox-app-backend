@@ -12,7 +12,12 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
-  const publicPaths = ["/api/login", "/api/register", "/api/forgot-password"];
+  const publicPaths = [
+    "/api/login",
+    "/api/register",
+    "/api/forgot-password",
+    "/api/reset-password"
+  ];
 
   if (publicPaths.includes(req.path)) {
     return next();
