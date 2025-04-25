@@ -12,7 +12,12 @@ export const authMiddleware = (
 ): void => {
   const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || "";
 
-  const publicPaths = ["/api/login", "/api/register", "/api/forgot-password"];
+  const publicPaths = [
+    "/api/login",
+    "/api/register",
+    "/api/forgot-password",
+    "/api/reset-password"
+  ];
 
   if (publicPaths.includes(req.path)) {
     return next();

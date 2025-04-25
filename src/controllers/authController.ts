@@ -74,10 +74,25 @@ export const forgotPassword = (req: Request, res: Response): void => {
   }
 
   const resetToken = Math.random().toString(36).substring(2, 15);
-  console.log(`Mock reset token for ${email}: ${resetToken}`);
 
   res.status(200).json({
     message: "Reset link sent.",
     resetToken
   });
+};
+
+export const resetPassword = (req: Request, res: Response): void => {
+  const { token, newPassword, confirmPassword } = req.body;
+
+  if (!token || !newPassword || !confirmPassword) {
+    res.status(400).json({ error: "All fields are required." });
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    res.status(400).json({ error: "Passwords do not match." });
+    return;
+  }
+
+  res.status(200).json({ message: "Password reset successful." });
 };
