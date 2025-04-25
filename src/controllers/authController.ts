@@ -41,11 +41,21 @@ export const register = (req: Request, res: Response): void => {
     return;
   }
 
-  const { username } = parsed.data;
+  const { username, password, fullName } = parsed.data;
   if (username == "teste@mapbox.com") {
     res.status(409).json({ error: "Conflict." });
     return;
   }
+
+  const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || "secret";
+  const token = jwt.sign({ username, fullName }, ACCESS_TOKEN_SECRET, {
+    expiresIn: '1h',
+  });
+
+  res.status(201).json({
+    message: "User registered",
+    accessToken: token,
+  });
 
   res.status(201).json({ success: "account created." });
   return;
